@@ -1,10 +1,11 @@
 import { AppRoutes } from './routes'
+import { UsuarioLogadoProvider } from './contexts'
 
 function App() {
   return (
-    <div>
+    <UsuarioLogadoProvider>
       <AppRoutes />
-    </div>
+    </UsuarioLogadoProvider>
   )
 }
 
