@@ -1,9 +1,12 @@
 import { useRef, useCallback, useEffect, useMemo, useState } from "react";
+import { useUsuarioLogado } from "../../hooks";
 import { ButtonLogin } from "./components/ButtonLogin";
 import { InputLogin } from "./components/inputLogin";
 
 export const Login = () => {
   const inputPasswordRef = useRef<HTMLInputElement>(null);
+
+  const { nomeDoUsuario } = useUsuarioLogado();
 
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -28,6 +31,7 @@ export const Login = () => {
   return(
     <div>
       <p>Quantidade de caracteres no email: {emailLength}</p>
+      <p>{nomeDoUsuario}</p>
 
       <InputLogin
         label="Email"

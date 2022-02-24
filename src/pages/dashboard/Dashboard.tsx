@@ -1,17 +1,68 @@
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useCallback } from "react";
+
+interface IlistItem {
+  title: string;
+  isSelected: boolean;
+}
 
 export const Dashboard = () => {
-  const counterRef = useRef({ counter: 0})
+  const [lista, setLista] = useState<IlistItem[]>([]);
+
+  const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback((e) => {
+    if (e.key === 'Enter') {
+      if (e.currentTarget.value.trim().length === 0) return;
+
+      const value = e.currentTarget.value;
+
+      e.currentTarget.value = '';
+
+      setLista((oldLista) => {
+
+        if (oldLista.some((ListItem) => ListItem.title === value)) return oldLista;
+
+        return [
+          ...oldLista,
+        {
+          title: value,
+          isSelected: false,
+
+        }];
+      });
+    }
+  }, []);
 
   return(
     <div>
-      <h1>Dashboard</h1>
-      <p>Contador :{counterRef.current.counter}</p>
+      <p>Lista</p>
 
-      <button onClick={() => counterRef.current.counter++}>Somar</button>
+      <input onKeyDown={handleInputKeyDown} />
 
-      <Link to="/entrar">Entrar</Link>
+      <p>{lista.filter((listItem) => listItem.isSelected).length}</p>
+
+      <ul>
+        {lista.map((ListItem) => {
+          return <li key={ListItem.title}>
+            <input
+             type="checkbox"
+             checked={ListItem.isSelected}
+             onChange={() => {
+              setLista(oldLista => {
+                return oldLista.map(oldListItem => {
+                  const newIsSelected = oldListItem.title === ListItem.title
+                  ? !oldListItem.isSelected
+                  : oldListItem.isSelected;
+                  return {
+                    ...oldListItem,
+                    isSelected: newIsSelected,
+                  }
+                });
+              })
+             }}
+            />
+            {ListItem.title}</li>;
+        })}
+      </ul>
+
     </div>
   );
 }
