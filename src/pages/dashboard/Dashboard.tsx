@@ -1,12 +1,21 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { ApiExeption } from "../../services/api/ErrorExeption";
+import { ITarefa, TarefasService } from "../../services/api/tarefas/TarefasService";
 
-interface IlistItem {
-  title: string;
-  isSelected: boolean;
-}
 
 export const Dashboard = () => {
-  const [lista, setLista] = useState<IlistItem[]>([]);
+  const [lista, setLista] = useState<ITarefa[]>([]);
+
+  useEffect(() => {
+    TarefasService.getAll()
+      .then((result) => {
+        if (result instanceof ApiExeption) {
+          alert(result.message);
+        } else {
+          setLista(result);
+        }
+      });
+  }, [])
 
   const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback((e) => {
     if (e.key === 'Enter') {
@@ -16,20 +25,19 @@ export const Dashboard = () => {
 
       e.currentTarget.value = '';
 
-      setLista((oldLista) => {
+      if (lista.some((listItem) => listItem.title === value)) return;
 
-        if (oldLista.some((ListItem) => ListItem.title === value)) return oldLista;
-
-        return [
-          ...oldLista,
-        {
-          title: value,
-          isSelected: false,
-
-        }];
-      });
+      TarefasService.create({ title: value, isCompleted: false })
+        .then((result) => {
+          if (result instanceof ApiExeption) {
+            alert(result.message);
+          } else {
+            setLista((oldLista) => [...oldLista, result ]);
+          }
+        }
+      );
     }
-  }, []);
+  }, [lista]);
 
   return(
     <div>
@@ -37,23 +45,23 @@ export const Dashboard = () => {
 
       <input onKeyDown={handleInputKeyDown} />
 
-      <p>{lista.filter((listItem) => listItem.isSelected).length}</p>
+      <p>{lista.filter((listItem) => listItem.isCompleted).length}</p>
 
       <ul>
         {lista.map((ListItem) => {
-          return <li key={ListItem.title}>
+          return <li key={ListItem.id}>
             <input
              type="checkbox"
-             checked={ListItem.isSelected}
+             checked={ListItem.isCompleted}
              onChange={() => {
               setLista(oldLista => {
                 return oldLista.map(oldListItem => {
-                  const newIsSelected = oldListItem.title === ListItem.title
-                  ? !oldListItem.isSelected
-                  : oldListItem.isSelected;
+                  const newIsCompleted = oldListItem.title === ListItem.title
+                  ? !oldListItem.isCompleted
+                  : oldListItem.isCompleted;
                   return {
                     ...oldListItem,
-                    isSelected: newIsSelected,
+                    isCompleted: newIsCompleted,
                   }
                 });
               })
