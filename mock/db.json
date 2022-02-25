@@ -2,18 +2,13 @@
   "tarefas": [
     {
       "title": "Tarefa 01",
-      "estaCompleta": false,
+      "isCompleted": true,
       "id": 1
     },
     {
       "title": "Tarefa 02",
-      "estaCompleta": false,
+      "isCompleted": true,
       "id": 2
-    },
-    {
-      "title": "Tarefa 03",
-      "estaCompleta": false,
-      "id": 3
     },
     {
       "title": "Tarefa 04",
